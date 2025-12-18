@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'
+    }
+
     stages {
         stage('Clone Repo') {
             steps {
@@ -11,9 +15,16 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'echo "Build launched from Jenkinsfile"'
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
             }
         }
     }
 }
-
